@@ -15,6 +15,7 @@ entries are kept inline.
 - Per-entry thumbnails for images, source-app icons otherwise
 - Right-click context menu (paste, copy, pin, delete, reveal/open)
 - Persistent, atomically-written history
+- Skips concealed clipboard content (passwords from password managers
 
 ## Installation
 
