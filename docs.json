@@ -33,7 +33,7 @@
           "Opens the clipboard history chooser.",
           ""
         ],
-        "name" : "show",
+        "desc" : "Opens the clipboard history chooser.",
         "parameters" : [
           " * None",
           ""
@@ -46,7 +46,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Opens the clipboard history chooser.",
+        "name" : "show",
         "def" : "ClipboardHistory:show()"
       },
       {
@@ -55,7 +55,7 @@
           "Clears all clipboard history, including pinned entries and stored images.",
           ""
         ],
-        "name" : "clear",
+        "desc" : "Clears all clipboard history, including pinned entries and stored images.",
         "parameters" : [
           " * None",
           ""
@@ -68,7 +68,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Clears all clipboard history, including pinned entries and stored images.",
+        "name" : "clear",
         "def" : "ClipboardHistory:clear()"
       },
       {
@@ -79,7 +79,7 @@
           "Does not start the background pasteboard poller (see :start()).",
           ""
         ],
-        "name" : "init",
+        "desc" : "Initializes the Spoon: resolves its data directory, loads any persisted",
         "parameters" : [
           " * None",
           ""
@@ -92,7 +92,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Initializes the Spoon: resolves its data directory, loads any persisted",
+        "name" : "init",
         "def" : "ClipboardHistory:init()"
       },
       {
@@ -101,7 +101,7 @@
           "Starts the background timer that polls the system pasteboard for changes.",
           ""
         ],
-        "name" : "start",
+        "desc" : "Starts the background timer that polls the system pasteboard for changes.",
         "parameters" : [
           " * None",
           ""
@@ -114,7 +114,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Starts the background timer that polls the system pasteboard for changes.",
+        "name" : "start",
         "def" : "ClipboardHistory:start()"
       },
       {
@@ -123,7 +123,7 @@
           "Stops the background pasteboard poller.",
           ""
         ],
-        "name" : "stop",
+        "desc" : "Stops the background pasteboard poller.",
         "parameters" : [
           " * None",
           ""
@@ -136,7 +136,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Stops the background pasteboard poller.",
+        "name" : "stop",
         "def" : "ClipboardHistory:stop()"
       },
       {
@@ -145,7 +145,7 @@
           "Binds hotkeys for this Spoon.",
           ""
         ],
-        "name" : "bindHotkeys",
+        "desc" : "Binds hotkeys for this Spoon.",
         "parameters" : [
           " * mapping - A table containing hotkey modifier\/key details for the",
           "   following items:",
@@ -161,7 +161,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Binds hotkeys for this Spoon.",
+        "name" : "bindHotkeys",
         "def" : "ClipboardHistory:bindHotkeys(mapping)"
       },
       {
@@ -171,7 +171,7 @@
           "the Hammerspoon console for troubleshooting.",
           ""
         ],
-        "name" : "debug",
+        "desc" : "Prints internal state (history contents, timer status, active filter) to",
         "parameters" : [
           " * None",
           ""
@@ -184,11 +184,13 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Prints internal state (history contents, timer status, active filter) to",
+        "name" : "debug",
         "def" : "ClipboardHistory:debug()"
       }
     ],
-    "doc" : "A clipboard history manager for Hammerspoon.\n\nPolls the system pasteboard and keeps a searchable history of text, URLs,\nfile paths and images, presented in a fuzzy-searchable chooser. History\npersists across restarts. Images are stored on disk; text-like entries are\nkept inline.",
+    "Command" : [
+
+    ],
     "items" : [
       {
         "doc" : "Binds hotkeys for this Spoon.\n\nParameters:\n * mapping - A table containing hotkey modifier\/key details for the\n   following items:\n   * show  - Open the clipboard history chooser\n   * clear - Clear all clipboard history\n\nReturns:\n * The ClipboardHistory object",
@@ -196,7 +198,7 @@
           "Binds hotkeys for this Spoon.",
           ""
         ],
-        "name" : "bindHotkeys",
+        "desc" : "Binds hotkeys for this Spoon.",
         "parameters" : [
           " * mapping - A table containing hotkey modifier\/key details for the",
           "   following items:",
@@ -212,7 +214,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Binds hotkeys for this Spoon.",
+        "name" : "bindHotkeys",
         "def" : "ClipboardHistory:bindHotkeys(mapping)"
       },
       {
@@ -221,7 +223,7 @@
           "Clears all clipboard history, including pinned entries and stored images.",
           ""
         ],
-        "name" : "clear",
+        "desc" : "Clears all clipboard history, including pinned entries and stored images.",
         "parameters" : [
           " * None",
           ""
@@ -234,7 +236,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Clears all clipboard history, including pinned entries and stored images.",
+        "name" : "clear",
         "def" : "ClipboardHistory:clear()"
       },
       {
@@ -244,7 +246,7 @@
           "the Hammerspoon console for troubleshooting.",
           ""
         ],
-        "name" : "debug",
+        "desc" : "Prints internal state (history contents, timer status, active filter) to",
         "parameters" : [
           " * None",
           ""
@@ -257,7 +259,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Prints internal state (history contents, timer status, active filter) to",
+        "name" : "debug",
         "def" : "ClipboardHistory:debug()"
       },
       {
@@ -268,7 +270,7 @@
           "Does not start the background pasteboard poller (see :start()).",
           ""
         ],
-        "name" : "init",
+        "desc" : "Initializes the Spoon: resolves its data directory, loads any persisted",
         "parameters" : [
           " * None",
           ""
@@ -281,7 +283,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Initializes the Spoon: resolves its data directory, loads any persisted",
+        "name" : "init",
         "def" : "ClipboardHistory:init()"
       },
       {
@@ -290,7 +292,7 @@
           "Opens the clipboard history chooser.",
           ""
         ],
-        "name" : "show",
+        "desc" : "Opens the clipboard history chooser.",
         "parameters" : [
           " * None",
           ""
@@ -303,7 +305,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Opens the clipboard history chooser.",
+        "name" : "show",
         "def" : "ClipboardHistory:show()"
       },
       {
@@ -312,7 +314,7 @@
           "Starts the background timer that polls the system pasteboard for changes.",
           ""
         ],
-        "name" : "start",
+        "desc" : "Starts the background timer that polls the system pasteboard for changes.",
         "parameters" : [
           " * None",
           ""
@@ -325,7 +327,7 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Starts the background timer that polls the system pasteboard for changes.",
+        "name" : "start",
         "def" : "ClipboardHistory:start()"
       },
       {
@@ -334,7 +336,7 @@
           "Stops the background pasteboard poller.",
           ""
         ],
-        "name" : "stop",
+        "desc" : "Stops the background pasteboard poller.",
         "parameters" : [
           " * None",
           ""
@@ -347,13 +349,11 @@
         "returns" : [
           " * The ClipboardHistory object"
         ],
-        "desc" : "Stops the background pasteboard poller.",
+        "name" : "stop",
         "def" : "ClipboardHistory:stop()"
       }
     ],
-    "Command" : [
-
-    ],
+    "doc" : "A clipboard history manager for Hammerspoon.\n\nPolls the system pasteboard and keeps a searchable history of text, URLs,\nfile paths and images, presented in a fuzzy-searchable chooser. History\npersists across restarts. Images are stored on disk; text-like entries are\nkept inline.",
     "name" : "ClipboardHistory"
   }
 ]
