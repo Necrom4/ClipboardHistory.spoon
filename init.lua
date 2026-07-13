@@ -17,19 +17,19 @@ obj.author = "necrom4"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.homepage = "https://github.com/necrom4/ClipboardHistory.spoon"
 
-local maxHistory    = 100
+local maxHistory = 100
 local maxTextLength = 1024 * 1024 -- 1 MB
-local pollInterval  = 0.4
+local pollInterval = 0.4
 
 -- Resolved in :init().
-local imageDir      = nil
-local historyFile   = nil
+local imageDir = nil
+local historyFile = nil
 
 -- One of nil, "text", "url", "file", "image", "pinned".
-local activeFilter  = nil
-local activeQuery   = ""
+local activeFilter = nil
+local activeQuery = ""
 
-local iconCache     = {}
+local iconCache = {}
 
 local function shorten(s, n)
 	s = s:gsub("^%s+", ""):gsub("%s+$", ""):gsub("%s+", " ")
@@ -93,12 +93,18 @@ local function fuzzyScore(haystack, needle)
 	local nLen = #needle
 	local ni, score, prevMatched = 1, 0, false
 	for hi = 1, #haystack do
-		if ni > nLen then break end
+		if ni > nLen then
+			break
+		end
 		if haystack:sub(hi, hi) == needle:sub(ni, ni) then
 			score = score + 1
-			if prevMatched then score = score + 4 end
+			if prevMatched then
+				score = score + 4
+			end
 			local prev = hi > 1 and haystack:sub(hi - 1, hi - 1) or " "
-			if prev:match("[%s%p]") then score = score + 3 end
+			if prev:match("[%s%p]") then
+				score = score + 3
+			end
 			ni, prevMatched = ni + 1, true
 		else
 			prevMatched = false
@@ -109,7 +115,9 @@ end
 
 local function readFile(path)
 	local f = io.open(path, "r")
-	if not f then return nil end
+	if not f then
+		return nil
+	end
 	local raw = f:read("*a")
 	f:close()
 	return raw
@@ -120,7 +128,9 @@ end
 local function atomicWrite(path, contents)
 	local tmp = path .. ".tmp"
 	local f = io.open(tmp, "w")
-	if not f then return end
+	if not f then
+		return
+	end
 	f:write(contents)
 	f:close()
 	os.rename(tmp, path)
@@ -128,9 +138,13 @@ end
 
 local function loadHistory()
 	local raw = readFile(historyFile)
-	if not raw or raw == "" then return {} end
+	if not raw or raw == "" then
+		return {}
+	end
 	local ok, decoded = pcall(hs.json.decode, raw)
-	if not (ok and type(decoded) == "table") then return {} end
+	if not (ok and type(decoded) == "table") then
+		return {}
+	end
 
 	for _, entry in ipairs(decoded) do
 		entry.kind = entry.kind or (entry.path and "image" or "text")
@@ -144,13 +158,19 @@ end
 
 local function saveHistory()
 	local ok, encoded = pcall(hs.json.encode, obj.history)
-	if ok then atomicWrite(historyFile, encoded) end
+	if ok then
+		atomicWrite(historyFile, encoded)
+	end
 end
 
 local function getAppIcon(bundleID)
-	if not bundleID then return nil end
+	if not bundleID then
+		return nil
+	end
 	local cached = iconCache[bundleID]
-	if cached ~= nil then return cached or nil end
+	if cached ~= nil then
+		return cached or nil
+	end
 	local img = hs.image.imageFromAppBundle(bundleID)
 	iconCache[bundleID] = img or false -- false = remembered miss
 	return img
@@ -162,16 +182,24 @@ local function getFrontmostInfo()
 end
 
 local function classifyText(text)
-	if looksLikeURL(text) then return "url" end
-	if looksLikeFilePath(text) then return "file" end
+	if looksLikeURL(text) then
+		return "url"
+	end
+	if looksLikeFilePath(text) then
+		return "file"
+	end
 	return "text"
 end
 
 local function captureImage(source)
 	local img = hs.pasteboard.readImage()
-	if not img then return nil end
+	if not img then
+		return nil
+	end
 	local filename = string.format("%s/clip-%d-%d.png", imageDir, os.time(), math.random(100000, 999999))
-	if not img:saveToFile(filename, "png") then return nil end
+	if not img:saveToFile(filename, "png") then
+		return nil
+	end
 	local size = img:size()
 	local attrs = hs.fs.attributes(filename) or {}
 	return {
@@ -201,7 +229,9 @@ end
 
 -- Images compared by dimensions+size (no pixel hashing), text by content.
 local function entryEquals(a, b)
-	if a.kind ~= b.kind then return false end
+	if a.kind ~= b.kind then
+		return false
+	end
 	if a.kind == "image" then
 		return a.bytes == b.bytes and a.width == b.width and a.height == b.height
 	end
@@ -215,7 +245,9 @@ local function deleteImageFile(entry)
 end
 
 local function addEntry(entry)
-	if not entry then return false end
+	if not entry then
+		return false
+	end
 
 	-- A duplicate keeps the older entry's pinned flag and image file.
 	for i, item in ipairs(obj.history) do
@@ -253,7 +285,9 @@ end
 
 local function checkPasteboard()
 	local cc = hs.pasteboard.changeCount()
-	if cc == obj.lastChangeCount then return end
+	if cc == obj.lastChangeCount then
+		return
+	end
 	obj.lastChangeCount = cc
 
 	if pasteboardIsConcealed() then
@@ -276,7 +310,9 @@ end
 local function restoreEntry(entry)
 	if entry.kind == "image" then
 		local img = hs.image.imageFromPath(entry.path)
-		if img then hs.pasteboard.writeObjects(img) end
+		if img then
+			hs.pasteboard.writeObjects(img)
+		end
 	else
 		hs.pasteboard.setContents(entry.text)
 	end
@@ -284,8 +320,12 @@ local function restoreEntry(entry)
 end
 
 local function entryMatchesFilter(entry)
-	if not activeFilter then return true end
-	if activeFilter == "pinned" then return entry.pinned == true end
+	if not activeFilter then
+		return true
+	end
+	if activeFilter == "pinned" then
+		return entry.pinned == true
+	end
 	return entry.kind == activeFilter
 end
 
@@ -298,9 +338,7 @@ local function entryFormattedTime(entry)
 end
 
 local function searchableText(entry)
-	local body = entry.kind == "image"
-		and (entry.path:match("[^/]+$") or "")
-		or (entry.text or "")
+	local body = entry.kind == "image" and (entry.path:match("[^/]+$") or "") or (entry.text or "")
 	return table.concat({ body, entryAppName(entry) or "", entryFormattedTime(entry), entry.kind }, " ")
 end
 
@@ -314,10 +352,14 @@ end
 local function buildSubText(entry)
 	local app = entryAppName(entry)
 	local parts = { entry.kind }
-	if app then table.insert(parts, "from " .. app) end
+	if app then
+		table.insert(parts, "from " .. app)
+	end
 	table.insert(parts, entryFormattedTime(entry))
 	table.insert(parts, describeSize(entry))
-	if entry.pinned then table.insert(parts, "pinned") end
+	if entry.pinned then
+		table.insert(parts, "pinned")
+	end
 	return table.concat(parts, " • ")
 end
 
@@ -329,16 +371,19 @@ local function rowTitle(entry)
 end
 
 local function rowImage(entry)
-	if entry.kind == "image" then return hs.image.imageFromPath(entry.path) end
+	if entry.kind == "image" then
+		return hs.image.imageFromPath(entry.path)
+	end
 	return getAppIcon(entry.source and entry.source.bundleID)
 end
 
 -- Suffix the active query as zero-size styled text so every row our fuzzy
 -- scorer kept survives the chooser's built-in substring matcher.
 local function withHiddenQuery(text)
-	if activeQuery == "" then return text end
-	return hs.styledtext.new(text)
-		.. hs.styledtext.new(" " .. activeQuery, { font = { size = 0.01 } })
+	if activeQuery == "" then
+		return text
+	end
+	return hs.styledtext.new(text) .. hs.styledtext.new(" " .. activeQuery, { font = { size = 0.01 } })
 end
 
 local function buildChoices()
@@ -354,7 +399,9 @@ local function buildChoices()
 
 	if activeQuery ~= "" then
 		table.sort(matches, function(a, b)
-			if a.score ~= b.score then return a.score > b.score end
+			if a.score ~= b.score then
+				return a.score > b.score
+			end
 			return a.index < b.index
 		end)
 	end
@@ -384,7 +431,9 @@ end
 
 local function indexOf(entry)
 	for i, item in ipairs(obj.history) do
-		if item == entry then return i end
+		if item == entry then
+			return i
+		end
 	end
 end
 
@@ -418,11 +467,17 @@ local actions = {
 }
 
 local function performAction(entry, action)
-	if entry and actions[action] then actions[action](entry) end
+	if entry and actions[action] then
+		actions[action](entry)
+	end
 end
 
 local validTags = {
-	text = true, url = true, file = true, image = true, pinned = true,
+	text = true,
+	url = true,
+	file = true,
+	image = true,
+	pinned = true,
 }
 
 -- Modal active only while the chooser is open.
@@ -437,28 +492,40 @@ local function bindPickerAction(mods, key, action, opts)
 	opts = opts or {}
 	pickerKeys:bind(mods, key, nil, function()
 		local entry = selectedEntry()
-		if not entry then return end
-		if opts.hide then obj.chooser:hide() end
+		if not entry then
+			return
+		end
+		if opts.hide then
+			obj.chooser:hide()
+		end
 		performAction(entry, action)
-		if opts.refresh then refreshChooser() end
+		if opts.refresh then
+			refreshChooser()
+		end
 	end)
 end
 
 local function moveSelection(delta)
 	local total = #buildChoices()
-	if total == 0 then return end
+	if total == 0 then
+		return
+	end
 	local current = math.max(1, obj.chooser:selectedRow())
 	obj.chooser:selectedRow((current - 1 + delta) % total + 1)
 end
 
 local function bindPickerNav(mods, key, delta)
-	local fn = function() moveSelection(delta) end
+	local fn = function()
+		moveSelection(delta)
+	end
 	pickerKeys:bind(mods, key, nil, fn, nil, fn)
 end
 
 local function buildChooser()
 	obj.chooser = hs.chooser.new(function(choice)
-		if choice then performAction(obj.history[choice.index], "paste") end
+		if choice then
+			performAction(obj.history[choice.index], "paste")
+		end
 	end)
 
 	obj.chooser:rows(10)
@@ -486,35 +553,51 @@ local function buildChooser()
 	end)
 
 	obj.chooser:rightClickCallback(function(row)
-		if row == 0 then return end
+		if row == 0 then
+			return
+		end
 		local choice = buildChoices()[row]
 		local entry = choice and obj.history[choice.index]
-		if not entry then return end
+		if not entry then
+			return
+		end
 
-		local function hideThen(name) return function()
-			obj.chooser:hide()
-			performAction(entry, name)
-		end end
-		local function refreshAfter(name) return function()
-			performAction(entry, name)
-			refreshChooser()
-		end end
+		local function hideThen(name)
+			return function()
+				obj.chooser:hide()
+				performAction(entry, name)
+			end
+		end
+		local function refreshAfter(name)
+			return function()
+				performAction(entry, name)
+				refreshChooser()
+			end
+		end
 
 		local items = {
-			{ title = "Paste",                  fn = hideThen("paste") },
-			{ title = "Copy to Clipboard",      fn = hideThen("copy") },
+			{ title = "Paste", fn = hideThen("paste") },
+			{ title = "Copy to Clipboard", fn = hideThen("copy") },
 			{ title = "-" },
 			{ title = entry.pinned and "Unpin" or "Pin", fn = refreshAfter("togglePin") },
-			{ title = "Delete",                 fn = refreshAfter("delete") },
+			{ title = "Delete", fn = refreshAfter("delete") },
 		}
 		if entry.kind == "image" then
 			table.insert(items, { title = "-" })
-			table.insert(items, { title = "Reveal in Finder",
-				fn = function() hs.execute(string.format("open -R %q", entry.path)) end })
+			table.insert(items, {
+				title = "Reveal in Finder",
+				fn = function()
+					hs.execute(string.format("open -R %q", entry.path))
+				end,
+			})
 		elseif entry.kind == "url" then
 			table.insert(items, { title = "-" })
-			table.insert(items, { title = "Open URL",
-				fn = function() hs.urlevent.openURL(entry.text) end })
+			table.insert(items, {
+				title = "Open URL",
+				fn = function()
+					hs.urlevent.openURL(entry.text)
+				end,
+			})
 		end
 
 		local menu = hs.menubar.new(false)
@@ -524,19 +607,23 @@ local function buildChooser()
 
 	pickerKeys = hs.hotkey.modal.new()
 
-	bindPickerAction({ "cmd" }, "return", "copy",      { hide = true })
-	bindPickerAction({ "cmd" }, ".",      "togglePin", { refresh = true })
-	bindPickerAction({ "cmd" }, "delete", "delete",    { refresh = true })
+	bindPickerAction({ "cmd" }, "return", "copy", { hide = true })
+	bindPickerAction({ "cmd" }, ".", "togglePin", { refresh = true })
+	bindPickerAction({ "cmd" }, "delete", "delete", { refresh = true })
 
-	bindPickerNav({},          "down", 1)
-	bindPickerNav({},          "up",  -1)
-	bindPickerNav({},          "tab",  1)
+	bindPickerNav({}, "down", 1)
+	bindPickerNav({}, "up", -1)
+	bindPickerNav({}, "tab", 1)
 	bindPickerNav({ "shift" }, "tab", -1)
-	bindPickerNav({ "ctrl" },  "j",    1)
-	bindPickerNav({ "ctrl" },  "k",   -1)
+	bindPickerNav({ "ctrl" }, "j", 1)
+	bindPickerNav({ "ctrl" }, "k", -1)
 
-	obj.chooser:showCallback(function() pickerKeys:enter() end)
-	obj.chooser:hideCallback(function() pickerKeys:exit() end)
+	obj.chooser:showCallback(function()
+		pickerKeys:enter()
+	end)
+	obj.chooser:hideCallback(function()
+		pickerKeys:exit()
+	end)
 end
 
 --- ClipboardHistory:show()
@@ -571,7 +658,9 @@ end
 --- Returns:
 ---  * The ClipboardHistory object
 function obj:clear()
-	for _, item in ipairs(self.history) do deleteImageFile(item) end
+	for _, item in ipairs(self.history) do
+		deleteImageFile(item)
+	end
 	self.history = {}
 	saveHistory()
 	hs.alert.show("Clipboard history cleared")
@@ -633,7 +722,9 @@ end
 --- Returns:
 ---  * The ClipboardHistory object
 function obj:stop()
-	if self.pollTimer then self.pollTimer:stop() end
+	if self.pollTimer then
+		self.pollTimer:stop()
+	end
 	return self
 end
 
@@ -651,7 +742,7 @@ end
 ---  * The ClipboardHistory object
 function obj:bindHotkeys(mapping)
 	local spec = {
-		show  = hs.fnutils.partial(self.show, self),
+		show = hs.fnutils.partial(self.show, self),
 		clear = hs.fnutils.partial(self.clear, self),
 	}
 	hs.spoons.bindHotkeysToSpec(spec, mapping)
@@ -682,9 +773,13 @@ function obj:debug()
 		else
 			desc = string.format("[%s] %s", item.kind, (item.text or ""):sub(1, 60))
 		end
-		print(i, item.pinned and "[pinned]" or "        ",
+		print(
+			i,
+			item.pinned and "[pinned]" or "        ",
 			os.date("%H:%M:%S", item.time),
-			entryAppName(item) or "?", desc)
+			entryAppName(item) or "?",
+			desc
+		)
 	end
 	return self
 end

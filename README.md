@@ -45,19 +45,19 @@ spoon.ClipboardHistory:start()
 
 Bound via `:bindHotkeys`:
 
-| Action  | Description                  |
-| ------- | ---------------------------- |
-| `show`  | Open the clipboard history   |
-| `clear` | Clear all history            |
+| Action  | Description                |
+| ------- | -------------------------- |
+| `show`  | Open the clipboard history |
+| `clear` | Clear all history          |
 
 Inside the chooser:
 
-| Key                     | Action                                            |
-| ----------------------- | ------------------------------------------------- |
-| `↵`                     | Paste selected entry into the previous app        |
-| `⌘↵`                    | Copy to clipboard without pasting                 |
-| `⌘.`                    | Pin / unpin selected entry                        |
-| `⌘⌫`                    | Delete selected entry                             |
+| Key                          | Action                                           |
+| ---------------------------- | ------------------------------------------------ |
+| `↵`                          | Paste selected entry into the previous app       |
+| `⌘↵`                         | Copy to clipboard without pasting                |
+| `⌘.`                         | Pin / unpin selected entry                       |
+| `⌘⌫`                         | Delete selected entry                            |
 | `↑`/`↓`, `⇥`/`⇧⇥`, `⌃J`/`⌃K` | Move selection (focus stays on the search field) |
 
 ## API
