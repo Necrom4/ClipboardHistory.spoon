@@ -17,6 +17,8 @@ obj.author = "necrom4"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.homepage = "https://github.com/necrom4/ClipboardHistory.spoon"
 
+obj.logger = hs.logger.new("ClipboardHistory")
+
 local maxHistory = 100
 local maxTextLength = 1024 * 1024 -- 1 MB
 local pollInterval = 0.4
@@ -304,6 +306,15 @@ local function checkPasteboard()
 	end
 	if types.image then
 		addEntry(captureImage(source))
+	end
+end
+
+-- An error inside a plain hs.timer callback stops the timer for good, so
+-- every check is guarded.
+local function safeCheckPasteboard()
+	local ok, err = pcall(checkPasteboard)
+	if not ok then
+		obj.logger.e("Error while checking pasteboard: " .. tostring(err))
 	end
 end
 
@@ -636,7 +647,7 @@ end
 --- Returns:
 ---  * The ClipboardHistory object
 function obj:show()
-	checkPasteboard()
+	safeCheckPasteboard()
 	if #self.history == 0 then
 		hs.alert.show("Clipboard history is empty")
 		return self
@@ -705,7 +716,7 @@ end
 ---  * The ClipboardHistory object
 function obj:start()
 	if not self.pollTimer then
-		self.pollTimer = hs.timer.new(pollInterval, checkPasteboard)
+		self.pollTimer = hs.timer.new(pollInterval, safeCheckPasteboard, true)
 	end
 	self.lastChangeCount = hs.pasteboard.changeCount()
 	self.pollTimer:start()
