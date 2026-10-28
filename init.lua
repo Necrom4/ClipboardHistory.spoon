@@ -129,6 +129,7 @@ end
 -- destination.
 local function atomicWrite(path, contents)
 	local tmp = path .. ".tmp"
+	hs.fs.mkdir(path:match("^(.*)/"))
 	local f = io.open(tmp, "w")
 	if not f then
 		return
@@ -198,6 +199,8 @@ local function captureImage(source)
 	if not img then
 		return nil
 	end
+	hs.fs.mkdir(imageDir:match("^(.*)/"))
+	hs.fs.mkdir(imageDir)
 	local filename = string.format("%s/clip-%d-%d.png", imageDir, os.time(), math.random(100000, 999999))
 	if not img:saveToFile(filename, "png") then
 		return nil
